@@ -1,0 +1,53 @@
+# ✅ 1. Instalar SDK
+%pip install -q -U "google-genai>=1.0.0"
+
+# ✅ 2. Configura directamente tu API key (NO uses userdata)
+import google.generativeai as genai
+
+genai.configure(api_key="TU_API_KEY_AQUI")  # ← pega tu API key aquí
+
+# ✅ 3. Leer datos desde archivo JSON (n8n puede crear este archivo)
+import json
+import os
+
+prompt_file = "/content/prompt.json"
+if os.path.exists(prompt_file):
+    with open(prompt_file) as f:
+        data = json.load(f)
+    prompt = data.get("prompt", "A default image prompt")
+    number_of_images = int(data.get("number_of_images", 1))
+    person_generation = data.get("person_generation", "DONT_ALLOW")
+    aspect_ratio = data.get("aspect_ratio", "1:1")
+else:
+    # Fallback si no hay archivo
+    prompt = "A cat lounging lazily on a sunny windowstill playing with a kid toy."
+    number_of_images = 1
+    person_generation = "DONT_ALLOW"
+    aspect_ratio = "1:1"
+
+# ✅ 4. Generar imágenes
+model = genai.GenerativeModel("imagen-3-0:generate-002")
+
+result = model.generate_image(
+    prompt=prompt,
+    aspect_ratio=aspect_ratio,
+    config=dict(
+        number_of_images=number_of_images,
+        output_mime_type="image/jpeg",
+        person_generation=person_generation
+    )
+)
+
+# ✅ 5. Guardar imágenes como archivos JPEG
+from PIL import Image
+from io import BytesIO
+
+output_paths = []
+
+for i, generated_image in enumerate(result.generated_images):
+    image = Image.open(BytesIO(generated_image.image.image_bytes))
+    filename = f"/content/image_{i+1}.jpg"
+    image.save(filename)
+    output_paths.append(filename)
+
+print("✅ Imágenes guardadas:", output_paths)
