@@ -4,7 +4,7 @@
 # ✅ 2. Configura directamente tu API key (NO uses userdata)
 import google.generativeai as genai
 
-genai.configure(api_key="TU_API_KEY_AQUI")  # ← pega tu API key aquí
+genai.configure(api_key="AIzaSyBsk5dj_mzi3B_b6E-DP7ERh3cra-HEgK0")  # ← pega tu API key aquí
 
 # ✅ 3. Leer datos desde archivo JSON (n8n puede crear este archivo)
 import json
