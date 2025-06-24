@@ -1,0 +1,48 @@
+# ✅ Instala primero google-generativeai y pillow desde tu terminal local
+# pip install google-generativeai pillow
+
+import google.generativeai as genai
+import json
+import os
+from PIL import Image
+from io import BytesIO
+
+# ✅ Configura tu API key directamente
+genai.configure(api_key="AIzaSyBsk5dj_mzi3B_b6E-DP7ERh3cra-HEgK0")
+
+# ✅ Lee parámetros desde archivo JSON generado por N8N
+prompt_file = "prompt.json"
+if os.path.exists(prompt_file):
+    with open(prompt_file) as f:
+        data = json.load(f)
+    prompt = data.get("prompt", "Default image prompt")
+    number_of_images = int(data.get("number_of_images", 1))
+    person_generation = data.get("person_generation", "DONT_ALLOW")
+    aspect_ratio = data.get("aspect_ratio", "1:1")
+else:
+    prompt = "A cat lounging lazily on a sunny windowstill playing with a kid toy."
+    number_of_images = 1
+    person_generation = "DONT_ALLOW"
+    aspect_ratio = "1:1"
+
+# ✅ Genera las imágenes
+model = genai.GenerativeModel("imagen-3-0:generate-002")
+result = model.generate_image(
+    prompt=prompt,
+    aspect_ratio=aspect_ratio,
+    config=dict(
+        number_of_images=number_of_images,
+        output_mime_type="image/jpeg",
+        person_generation=person_generation
+    )
+)
+
+# ✅ Guarda imágenes
+output_paths = []
+for i, generated_image in enumerate(result.generated_images):
+    image = Image.open(BytesIO(generated_image.image.image_bytes))
+    filename = f"image_{i+1}.jpg"
+    image.save(filename)
+    output_paths.append(filename)
+
+print("✅ Imágenes guardadas:", output_paths)
