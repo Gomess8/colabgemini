@@ -8,7 +8,7 @@ from PIL import Image
 from io import BytesIO
 
 # ✅ Configura tu API key directamente
-genai.configure(api_key="AIzaSyBsk5dj_mzi3B_b6E-DP7ERh3cra-HEgK0")
+genai.configure(api_key="")
 
 # ✅ Lee parámetros desde archivo JSON generado por N8N
 prompt_file = "prompt.json"
